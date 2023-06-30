@@ -50,11 +50,11 @@
         <div id="container">
             <div id="box">
                 <form enctype="multipart/form-data" method="post">
-                    <label for="data_emissao">Data inicial:</label>
-                    <input type="date" id="data_emissao" name="dataPeriodoInicial" class="inputs" required>
+                <label for="data_emissao" style=""><strong>Data inicial:</strong></label>
+                <input type="date" id="data_emissao" name="dataPeriodoInicial" class="inputs" >
 
-                    <label for="data_emissao">Data final:</label>
-                    <input type="date" id="data_emissao" name="dataPeriodoFinal" class="inputs" required>
+                <label for="data_emissao"><strong>Data final:</strong></label>
+                <input type="date" id="data_emissao" name="dataPeriodoFinal" class="inputs" >
 
                     <button type="submit" value="Buscar" class="bt">Buscar</button>
                 </form>
@@ -63,10 +63,10 @@
                         <table>
                             <tr>
                                 <th>ID</th>
-                                <th>nomePaciente</th>
-                                <th>nomMedico</th>
-                                <th>quantidadedias</th>
-                                <th>dataEmissao</th>
+                                <th>Nome do paciente</th>
+                                <th>Nome do médico</th>
+                                <th>Quantidade de dias</th>
+                                <th>Data de emissão</th>
                                 <th>Status</th>
                                 <th>Ação</th>
                                 </tr>

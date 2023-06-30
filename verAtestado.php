@@ -57,7 +57,7 @@ if ($result->num_rows > 0) {
                     <div class="itens">
                         <table>
                             <tr>
-                                <th>ID</th>
+                            <th>ID</th>
                                 <th>Nome do paciente</th>
                                 <th>Nome do médico</th>
                                 <th>Quantidade de dias</th>
@@ -74,7 +74,6 @@ if ($result->num_rows > 0) {
                                         echo "<td>".(isset($row['quantidadeDias']) ? $row['quantidadeDias'] : "")."</td>";
                                         echo "<td>".(isset($row['dataEmissao']) ? $row['dataEmissao'] : "")."</td>";
                                         echo "<td>".(isset($row['statusAtestado']) ? $row['statusAtestado'] : "")."</td>";
-                                        echo '<td><a href="validarAtestado.php?idAtestado=' . (isset($row['idAtestado']) ? $row['idAtestado'] : "") . '">Editar</a></td>';
                                         echo "</tr>";
                                     }
                                 } else {
