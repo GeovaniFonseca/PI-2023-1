@@ -29,12 +29,14 @@ if(isset($_POST['cpf']) || isset($_POST['senha'])) {
             $_SESSION['nome'] = $funcionario['nome'];
             $_SESSION['sesmt'] = $funcionario['sesmt'];
 
+            // Redirecionar para a página de destino após o login
             if($_SESSION['sesmt'] == 'sim'){
                 header("Location: painelSesmt.php");
             } else {
                 header("Location: painel.php");
             }
 
+            exit(); // Terminar o script para evitar que o restante do código seja executado
 
         } else {
             echo "Falha ao logar! E-mail ou senha incorretos";

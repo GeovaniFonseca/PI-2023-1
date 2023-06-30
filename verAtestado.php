@@ -1,89 +1,30 @@
 <?php
-// Obtém os valores dos filtros enviados pelo formulário
-$nome = $_POST["nome"];
-$cpf = $_POST["cpf"];
-$data_emissao = $_POST["dataEmissao"];
+include('protect.php');
+include('conexao.php');
 
-// Estabelece a conexão com o banco de dados
-$dsn = "mysql:host=nome_do_servidor;dbname=nome_do_banco_de_dados";
-$username = "nome_do_usuario";
-$password = "senha_do_usuario";
+$idFuncionario = $_SESSION['idFuncionario'];
 
-try {
-    $pdo = new PDO($dsn, $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+if(isset($_POST['dataPeriodoInicial']) || isset($_POST['dataPeriodoFinal'])){
+    $dataInicial = $_POST['dataPeriodoInicial'];
+    $dataFinal = $_POST['dataPeriodoFinal'];
 
-    // Constrói a consulta SQL dinamicamente com base nos filtros
-    $sql = "SELECT * FROM tabela WHERE 1 = 1";
+    $sql = "SELECT * FROM atestados WHERE fk_idFuncionario = $idFuncionario AND dataEmissao BETWEEN '$dataInicial' AND '$dataFinal'";
+} else {
+    $sql = "SELECT * FROM atestados WHERE fk_idFuncionario = $idFuncionario";
+}
 
-    if (!empty($nomePaciente)) {
-        $sql .= " AND nomePaciente = :nomePaciente";
+$result = $mysqli->query($sql);
+
+if ($result->num_rows > 0) {
+    $data = array();
+
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
     }
-
-    if (!empty($cpf)) {
-        $sql .= " AND cpf = :cpf";
-    }
-
-    if (!empty($dataEmissao)) {
-        $sql .= " AND dataEmissao = :dataEmissao";
-    }
-
-    // Prepara a consulta
-    $stmt = $pdo->prepare($sql);
-
-    // Binda os valores dos filtros
-    if (!empty($nome)) {
-        $stmt->bindValue(':nome', $nomePaciente);
-    }
-
-    if (!empty($cpf)) {
-        $stmt->bindValue(':cpf', $cpf);
-    }
-
-    if (!empty($dataEmissao)) {
-        $stmt->bindValue(':data_emissao', $dataEmissao);
-    }
-
-    // Executa a consulta
-    $stmt->execute();
-
-    // Obtém os resultados da consulta
-    $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Exibe os resultados
-    if (count($resultados) > 0) {
-        echo "<div class='itens'>";
-        echo "<table>";
-        echo "<tr>";
-        echo "<th>ID</th>";
-        echo "<th>nomePaciente</th>";
-        echo "<th>nomMedico</th>";
-        echo "<th>quantidadedias</th>";
-        echo "<th>dataEmissao</th>";
-        echo "<th>Status</th>";
-        echo "</tr>";
-
-        foreach ($resultados as $row) {
-            echo "<tr>";
-            echo "<td>" . $row['idAtestado'] . "</td>";
-            echo "<td>" . $row['nomePaciente'] . "</td>";
-            echo "<td>" . $row['nomeMedico'] . "</td>";
-            echo "<td>" . $row['quantidadeDias'] . "</td>";
-            echo "<td>" . $row['dataEmissao'] . "</td>";
-            echo "<td>" . $row['statusAtestado'] . "</td>";
-            echo "</tr>";
-        }
-
-        echo "</table>";
-        echo "</div>";
-    } else {
-        echo "<p>Nenhum atestado encontrado.</p>";
-    }
-} catch (PDOException $e) {
-    echo "Erro ao conectar com o banco de dados: " . $e->getMessage();
+} else {
+    $data = array();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -95,82 +36,53 @@ try {
 </head>
 <body>
     <div id="site">
-    <header id="header">
+        <header id="header">
             <div id="logo">
-                <img src="IMG/logo.png" alt="" width="150px"
-                    style="margin-left: 10px;">
-            </div>
-            <div class="logout">
-                <label for="logout"></label><br>
-                    <form action="logout.php">
-                        <input type="submit" class="logout" name="logout" value="Logout" />
-                    </form>
+                <img src="IMG/logo.png" alt="" width="150px" style="margin-left: 10px;">
             </div>
         </header>
 
         <div id="container">
             <div id="box">
-            <form enctype="multipart/form-data" method="post">
-                    <label for="nome">Nome:</label>
-                    <input type="text" id="nomePaciente" name="nomePaciente" class="inputs" >
+                <form enctype="multipart/form-data" method="post">
+                    <label for="data_emissao">Data inicial:</label>
+                    <input type="date" id="data_emissao" name="dataPeriodoInicial" class="inputs" required>
 
-                    <label for="cpf">CPF:</label>
-                    <input type="text"  id="cpf" name="cpf"  class="inputs" >
+                    <label for="data_emissao">Data final:</label>
+                    <input type="date" id="data_emissao" name="dataPeriodoFinal" class="inputs" required>
 
-                    <label for="data_emissao">Data de emissão:</label>
-                    <input type="date" id="dataEmissao" name="dataEmissao" class="inputs" >
-
-                    <button type="submit" value="Buscar" class="bt" name="buscar">Buscar</button>
+                    <button type="submit" value="Buscar" class="bt">Buscar</button>
                 </form>
                 <div class="list">
-                    <?php 
-                        // Verifica se o formulário foi enviado
-                        if (isset($_POST["buscar"])) {
-                            // Verifica se os campos de filtro estão preenchidos
-                            if (!empty($_POST["nomePaciente"]) || !empty($_POST["cpf"]) || !empty($_POST["dataEmissao"])) {
-                                // Obtém os valores dos filtros
-                                $nome = $_POST["nome"];
-                                $cpf = $_POST["cpf"];
-                                $dataEmissao = $_POST["dataEmissao"];
-
-                                // Execute a consulta SQL usando os filtros
-                                // Substitua as linhas abaixo com sua lógica de consulta ao banco de dados
-                                //$data = realizarConsulta($nomePaciente, $cpf, $data_emissao);
-
-                                // Exiba os resultados
+                    <div class="itens">
+                        <table>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome do paciente</th>
+                                <th>Nome do médico</th>
+                                <th>Quantidade de dias</th>
+                                <th>Data de emissão</th>
+                                <th>Status</th>
+                            </tr>
+                            <?php 
                                 if (!empty($data)){
-                                     echo "<div class='itens'>";
-                                     echo "<table>";
-                                     echo "<tr>";
-                                     echo "<th>ID</th>";
-                                     echo "<th>nomePaciente</th>";
-                                     echo "<th>nomMedico</th>";
-                                     echo "<th>quantidadedias</th>";
-                                     echo "<th>dataEmissao</th>";
-                                     echo "<th>Status</th>";
-                                     echo "</tr>";
-
-                                     foreach ($data as $row) {
-                                         echo "<tr>";
-                                         echo "<td>".(isset($row['idAtestado']) ? $row['idAtestado'] : "")."</td>";
-                                         echo "<td>".(isset($row['nomePaciente']) ? $row['nomePaciente'] : "")."</td>";
-                                         echo "<td>".(isset($row['nomeMedico']) ? $row['nomeMedico'] : "")."</td>";
-                                         echo "<td>".(isset($row['quantidadeDias']) ? $row['quantidadeDias'] : "")."</td>";
-                                         echo "<td>".(isset($row['dataEmissao']) ? $row['dataEmissao'] : "")."</td>";
-                                         echo "<td>".(isset($row['statusAtestado']) ? $row['statusAtestado'] : "")."</td>";
-                                         echo "</tr>";
-                                     }
-
-                                     echo "</table>";
-                                     echo "</div>";
-                                 } else {
-                                     echo "<p>Nenhum atestado encontrado.</p>";
-                                 }
-                            } else {
-                                echo "<p>Preencha pelo menos um campo de filtro.</p>";
-                            }
-                        }
-                    ?>
+                                    foreach ($data as $row) {
+                                        echo "<tr>";
+                                        echo "<td class='id-column'>".(isset($row['idAtestado']) ? $row['idAtestado'] : "")."</td>";
+                                        echo "<td>".(isset($row['nomePaciente']) ? $row['nomePaciente'] : "")."</td>";
+                                        echo "<td>".(isset($row['nomeMedico']) ? $row['nomeMedico'] : "")."</td>";
+                                        echo "<td>".(isset($row['quantidadeDias']) ? $row['quantidadeDias'] : "")."</td>";
+                                        echo "<td>".(isset($row['dataEmissao']) ? $row['dataEmissao'] : "")."</td>";
+                                        echo "<td>".(isset($row['statusAtestado']) ? $row['statusAtestado'] : "")."</td>";
+                                        echo '<td><a href="validarAtestado.php?idAtestado=' . (isset($row['idAtestado']) ? $row['idAtestado'] : "") . '">Editar</a></td>';
+                                        echo "</tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>Nenhum atestado encontrado.</td></tr>";
+                                }
+                            ?>
+                        </table>
+                    </div>
                 </div>
                 <label for="bt"></label><br>
                 <form action="painel.php">
@@ -180,7 +92,7 @@ try {
         </div>
         
         <div id="footer">
-            <p>E-atestados - Todos os direitos Reservados - 2023</p>
+            <p>E-atestados - Todos os direitos Reservados - 2022</p>
         </div>
     </div>
 </body>

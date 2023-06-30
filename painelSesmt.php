@@ -3,7 +3,12 @@
     include('conexao.php');
 
 
-    $sql = "SELECT * FROM atestados WHERE statusAtestado = 'Pendente'";
+    $sql = "SELECT * FROM atestados ORDER BY CASE
+            WHEN statusAtestado = 'Pendente' THEN 1
+            WHEN statusAtestado = 'Aprovado' THEN 2
+            WHEN statusAtestado = 'Rejeitado' THEN 3
+            ELSE 4
+        END";
 
     $result = $mysqli->query($sql);
 
@@ -70,7 +75,7 @@
                                     foreach ($data as $row) {
                                         if (!empty($row)){
                                             echo "<tr>";
-                                            echo "<td>".(isset($row['idAtestado']) ? $row['idAtestado'] : "")."</td>";
+                                            echo "<td class='id-column'>".(isset($row['idAtestado']) ? $row['idAtestado'] : "")."</td>";
                                             echo "<td>".(isset($row['nomePaciente']) ? $row['nomePaciente'] : "")."</td>";
                                             echo "<td>".(isset($row['nomeMedico']) ? $row['nomeMedico'] : "")."</td>";
                                             echo "<td>".(isset($row['quantidadeDias']) ? $row['quantidadeDias'] : "")."</td>";

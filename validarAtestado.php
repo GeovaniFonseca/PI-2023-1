@@ -38,6 +38,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="CSS\validarAtestado.css">
     <title>Validar atestados</title>
 </head>
 <body>
@@ -51,10 +52,11 @@
         
         <br>
         
-        <input type="submit" value="Salvar">
+        <input type="submit" class="bt" name="bt" value="Salvar" />
     </form>
-    <p>
-        <a href="painelSesmt.php">Voltar ao painel</a>
-    </p>
+    <label for="bt"></label><br>
+                <form action="painelSesmt.php">
+                    <input type="submit" class="bt" name="bt" value="Voltar" />
+                </form>
 </body>
 </html>
